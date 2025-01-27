@@ -128,7 +128,7 @@ By default, watsonx Code Assistant Individual uses the `granite-code:8b` model f
 If your environment has capacity, install the `granite-code:8b-base` model, and use it as _Local Code Gen Model_ as follows.
 To use a different model:
 
-1. Install the `granite-code:8b-base` model.
+1. Install the `granite-code:8b-base` model. See [Install the Granite code model](#install-the-granite-code-model).
 2. Open the extension settings.
 3. Update the model name for either _Local Code Gen Model_ to `granite-code:8b-base`.
 
