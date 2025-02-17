@@ -41,7 +41,7 @@ Create a comment that describes a function, method, or piece of logic in your ed
 
 ## Setup
 
-Watsonx Code Assistant Individual accesses models through <a href="https://ollama.com" target="_blank">Ollama</a>, which is a widely used local inferencing engine for LLMs. Ollama wraps the underlying model-serving project <a href="https://github.com/ggerganov/llama.cpp" target="_blank">llama.cpp</a>.
+Watsonx Code Assistant Individual accesses models through <a href="https://ollama.com" target="_blank">Ollama</a>, which is a widely used local inferencing engine for LLMs. Ollama wraps the underlying model-serving project <a href="https://github.com/ggml-org/llama.cpp" target="_blank">llama.cpp</a>.
 
 ### Install Ollama
 
