@@ -108,7 +108,9 @@ Get started with watsonx Code Assistant Individual by installing the `granite-co
    To create a Python class, you can define a new class using the "class" keyword followed by the name of the class and a colon. Inside the class definition, you can specify the methods and attributes that the class will have. Here is an example: ...
    ```
 
-### Install the watsonx Code Assistant Individual extension
+### Install the watsonx Code Assistant Individual Visual Studio Code extension
+
+This setup is not available for the Eclipse IDE plug-in. It is only available with the Visual Studio Code extension.
 
 1. Open the [watsonx Code Assistant](https://marketplace.visualstudio.com/items?itemName=IBM.wca-core&ssr=false#overview) extension page in the Visual Studio Marketplace.
 2. Click **Install** on the Marketplace page.
