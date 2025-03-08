@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watsonx-code-assistant
+  labels:
+    app: watsonx-code-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watsonx-code-assistant
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: watsonx-code-assistant
+    spec:
+      containers:
+      - name: watsonx-code-assistant
+        image: watsonx-code-assistant:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: "4"
+            memory: "8Gi"
+            nvidia.com/gpu: 1
+          requests:
+            cpu: "2"
+            memory: "4Gi"
+        ports:
+        - containerPort: 5000
+          name: http
+        - containerPort: 11434
+          name: ollama
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"
+        - name: TF_MEMORY_ALLOCATION
+          value: "0.85"
+        - name: TF_GPU_ALLOCATOR
+          value: "cuda_malloc_async"
+        - name: TF_XLA_FLAGS
+          value: "--tf_xla_auto_jit=2"
+        volumeMounts:
+        - name: model-storage
+          mountPath: /root/.ollama/models
+        - name: data
+          mountPath: /app/data
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 5000
+          initialDelaySeconds: 60
+          periodSeconds: 15
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: watsonx-models-pvc
+      - name: data
+        persistentVolumeClaim:
+          claimName: watsonx-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: watsonx-code-assistant
+spec:
+  selector:
+    app: watsonx-code-assistant
+  ports:
+  - name: http
+    port: 80
+    targetPort: 5000
+  - name: ollama
+    port: 11434
+    targetPort: 11434
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: watsonx-models-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: watsonx-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

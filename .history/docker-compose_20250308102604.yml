@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  watsonx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"  # Web UI
+      - "11434:11434"  # Ollama API
+    volumes:
+      - ./data:/app/data  # Persistent data
+      - watsonx_models:/root/.ollama/models  # Model storage
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - TF_GPU_ALLOCATOR=cuda_malloc_async
+      - TF_XLA_FLAGS=--tf_xla_auto_jit=2
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+      - TF_MEMORY_ALLOCATION=0.85
+      - CUDA_CACHE_MAXSIZE=2147483648
+
+volumes:
+  watsonx_models:  # Named volume for model storage

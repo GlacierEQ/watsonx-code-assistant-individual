@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Watsonx Code Assistant Dashboard - A professional AI code management interface">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' https://github.com data:; connect-src 'self' http://localhost:* wss://*.watsonx.ai ws://localhost:*; worker-src 'self' blob:;">
-    <meta name="theme-color" content="#0f62fe">
-    <link rel="manifest" href="manifest.json">
+        content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' https://github.com data:; connect-src 'self' http://localhost:*;">
     <title>Watsonx Code Assistant Dashboard</title>
 
     <!-- External CSS Libraries -->
@@ -42,41 +40,6 @@
 
     <!-- Toast container for notifications -->
     <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Authentication overlay -->
-    <div class="auth-overlay" id="authOverlay">
-        <div class="auth-container">
-            <div class="auth-header">
-                <img src="https://github.com/ibm-granite/watsonx-code-assistant-individual/raw/HEAD/images/granite-icon.png"
-                    alt="Watsonx Logo" height="40">
-                <h2>Watsonx Code Assistant</h2>
-            </div>
-            <form id="loginForm" aria-labelledby="loginHeading">
-                <h3 id="loginHeading">Sign In</h3>
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" required autocomplete="username">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <div class="password-input-container">
-                        <input type="password" class="form-control" id="password" required autocomplete="current-password">
-                        <button type="button" class="btn btn-sm password-toggle" aria-label="Toggle password visibility">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe">
-                    <label class="form-check-label" for="rememberMe">Remember me</label>
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Sign In</button>
-                    <button type="button" class="btn btn-outline-secondary" id="guestLoginBtn">Continue as Guest</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <div class="container-fluid">
         <div class="row">
@@ -128,22 +91,7 @@
             <main class="col main-content p-4" id="main-content">
                 <header class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Watsonx Code Assistant Dashboard</h2>
-                    <div class="d-flex gap-3 align-items-center">
-                        <div class="collaboration-status" id="collaborationStatus">
-                            <span class="badge bg-primary"><i class="bi bi-people-fill"></i> <span id="collaboratorCount">0</span> online</span>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle"></i> <span id="currentUsername">Guest</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                                <li><h6 class="dropdown-header">User Settings</h6></li>
-                                <li><a class="dropdown-item" href="#profile"><i class="bi bi-person"></i> Profile</a></li>
-                                <li><a class="dropdown-item" href="#settings"><i class="bi bi-gear"></i> Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Log out</a></li>
-                            </ul>
-                        </div>
+                    <div class="d-flex gap-3">
                         <button class="btn btn-outline-secondary" id="settingsBtn">
                             <i class="bi bi-gear-fill"></i> Settings
                         </button>
@@ -258,16 +206,10 @@
     <script src="assets/js/main.js"></script>
     <script src="assets/js/api.js"></script>
     <script src="assets/js/ui.js"></script>
-    <script src="assets/js/auth.js"></script>
     <script src="assets/js/charts.js"></script>
     <script src="assets/js/voice.js"></script>
-    <script src="assets/js/websocket.js"></script>
-    <script src="assets/js/collaboration.js"></script>
     <script src="assets/js/codeReview.js"></script>
     <script src="assets/js/promptEngine.js"></script>
-    <script src="assets/js/modelTraining.js"></script>
-    <script src="assets/js/telemetry.js"></script>
-    <script src="assets/js/accessibility.js"></script>
 </body>
 
 </html>
