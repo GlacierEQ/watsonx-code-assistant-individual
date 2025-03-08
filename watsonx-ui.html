@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watsonx Code Assistant Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #0f62fe;
+            --secondary-color: #393939;
+            --success-color: #24a148;
+            --warning-color: #f1c21b;
+            --danger-color: #da1e28;
+            --light-bg: #f4f4f4;
+            --dark-bg: #262626;
+            --text-light: #ffffff;
+            --text-dark: #161616;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        .sidebar {
+            height: 100vh;
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            transition: width 0.3s;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            transition: margin-left 0.3s;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-switch {
+            width: 60px;
+            height: 30px;
+            background-color: var(--secondary-color);
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .theme-switch-toggle {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: white;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode .theme-switch-toggle {
+            transform: translateX(30px);
+        }
+
+        .gpu-chart {
+            height: 200px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .progress-bar {
+            transition: width 0.6s ease;
+        }
+
+        .model-card {
+            cursor: pointer;
+        }
+
+        .model-card.active {
+            border: 2px solid var(--primary-color);
+        }
+
+        .terminal {
+            background-color: #1a1a1a;
+            color: #f1f1f1;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'IBM Plex Mono', monospace;
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .visual-config {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        /* AI Assistant Chat Styles */
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .dark-mode .chat-messages {
+            background-color: var(--dark-bg);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message {
+            background-color: #e9ecef;
+            color: var(--text-dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .dark-mode .ai-message {
+            background-color: #4d4d4d;
+            color: var(--text-light);
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background-color: var(--light-bg);
+            border-top: 1px solid #dee2e6;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .dark-mode .chat-input {
+            background-color: var(--dark-bg);
+            border-top: 1px solid #4d4d4d;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 8px 12px;
+            margin-right: 10px;
+        }
+
+        .dark-mode .chat-input input {
+            background-color: #333;
+            border-color: #666;
+            color: white;
+        }
+
+        /* Code Quality Analysis */
+        .code-quality-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .metric-name {
+            font-weight: 500;
+        }
+
+        .metric-score {
+            font-weight: bold;
+        }
+
+        .suggestion-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            background-color: rgba(15, 98, 254, 0.1);
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .suggestion-badge:hover {
+            background-color: rgba(15, 98, 254, 0.2);
+        }
+
+        .dark-mode .suggestion-badge {
+            background-color: rgba(70, 130, 255, 0.2);
+        }
+
+        /* AI Training Section */
+        .training-progress {
+            height: 5px;
+        }
+
+        .model-learning-card {
+            border-left: 4px solid var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-auto sidebar p-3">
+                <h4 class="text-center mb-4">
+                    <img src="https://github.com/ibm-granite/watsonx-code-assistant-individual/raw/HEAD/images/granite-icon.png"
+                        alt="Watsonx Logo" height="30">
+                    Watsonx
+                </h4>
+                <div class="list-group list-group-flush">
+                    <a href="#dashboard"
+                        class="list-group-item list-group-item-action active bg-transparent text-white border-0">Dashboard</a>
+                    <a href="#models"
+                        class="list-group-item list-group-item-action bg-transparent text-white border-0">Models</a>
+                    <a href="#configuration"
+                        class="list-group-item list-group-item-action bg-transparent text-white border-0">Configuration</a>
+                    <a href="#system"
+                        class="list-group-item list-group-item-action bg-transparent text-white border-0">System</a>
+                    <a href="#logs"
+                        class="list-group-item list-group-item-action bg-transparent text-white border-0">Logs</a>
+                    <a href="#help"
+                        class="list-group-item list-group-item-action bg-transparent text-white border-0">Help</a>
+                </div>
+                <div class="mt-auto pt-3 d-flex justify-content-between align-items-center">
+                    <span>Theme</span>
+                    <div class="theme-switch" id="themeSwitch">
+                        <div class="theme-switch-toggle"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col main-content p-4">
+                <header class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Watsonx Code Assistant Dashboard</h2>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-outline-secondary">
+                            <i class="bi bi-gear-fill"></i> Settings
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="bi bi-play-fill"></i> Launch VS Code
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Status Overview -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Ollama Status</h5>
+                                <span class="badge bg-success fs-6">Running</span>
+                                <p class="text-muted mt-2 mb-0">Port: 11434</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Active Model</h5>
+                                <h6>granite-code:8b</h6>
+                                <p class="text-muted mb-0">4.6GB loaded</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">GPU Utilization</h5>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%;"
+                                        aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                                </div>
+                                <p class="text-muted mt-2 mb-0">1.2GB / 8GB VRAM</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Extension Status</h5>
+                                <span class="badge bg-success fs-6">Installed</span>
+                                <p class="text-muted mt-2 mb-0">v1.0.4</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Models Section -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Available Models</h4>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModelModal">
+                            <i class="bi bi-plus-lg"></i> Install New Model
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card model-card active">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title">granite-code:8b</h5>
+                                            <span class="badge bg-success">Active</span>
+                                        </div>
+                                        <p class="card-text">Instruct model for code chat and completion</p>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">Size: 4.6GB</small>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" checked>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card model-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title">granite-code:8b-base</h5>
+                                            <span class="badge bg-secondary">Installed</span>
+                                        </div>
+                                        <p class="card-text">Base model for advanced code generation</p>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">Size: 4.8GB</small>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card model-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title">granite-code:3b</h5>
+                                            <span class="badge bg-warning">Download</span>
+                                        </div>
+                                        <p class="card-text">Smaller model for faster responses</p>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">Size: 2.1GB</small>
+                                            <button class="btn btn-sm btn-outline-primary">Install</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New: AI Assistant & Code Quality Analysis -->
+                <div class="row mb-4">
+                    <!-- AI Assistant -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 class="mb-0">AI Assistant</h4>
+                                <button class="btn btn-sm btn-outline-primary" id="clearChatBtn">
+                                    <i class="bi bi-trash"></i> Clear Chat
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="chat-container">
+                                    <div class="chat-messages" id="chatMessages">
+                                        <div class="message ai-message">
+                                            Hello! I'm your Watsonx Code Assistant. How can I help you today?
+                                        </div>
+                                    </div>
+                                    <div class="chat-input">
+                                        <input type="text" id="userInput" placeholder="Ask about models, performance, or coding help...">
+                                        <button class="btn btn-primary" id="sendMessageBtn">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Code Quality Analysis -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Code Quality Analysis</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <select class="form-select mb-3" id="projectSelect">
+                                        <option value="current">Current Project</option>
+                                        <option value="recent1">Recent: python-data-analysis</option>
+                                        <option value="recent2">Recent: node-api-service</option>
+                                    </select>
+
+                                    <div class="code-quality-metric">
+                                        <span class="metric-name">Code Quality Score</span>
+                                        <span class="metric-score text-success">A (92%)</span>
+                                    </div>
+
+                                    <div class="code-quality-metric">
+                                        <span class="metric-name">Test Coverage</span>
+                                        <span class="metric-score text-warning">78%</span>
+                                    </div>
+
+                                    <div class="code-quality-metric">
+                                        <span class="metric-name">Security Rating</span>
+                                        <span class="metric-score text-success">Low Risk</span>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <h6>AI Suggestions</h6>
+                                        <div>
+                                            <span class="suggestion-badge">Add unit tests for auth.js</span>
+                                            <span class="suggestion-badge">Refactor duplicated code in utils/</span>
+                                            <span class="suggestion-badge">Optimize DB queries in user.service.ts</span>
+                                            <span class="suggestion-badge">Update dependencies with vulnerabilities</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New: Performance Insights & Model Training -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>AI Model Training & Adaptation</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Model Performance Insights</h5>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Response Quality</span>
+                                        <span>87%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 87%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Code Accuracy</span>
+                                        <span>92%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 92%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Contextual Understanding</span>
+                                        <span>84%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 84%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5>Active Learning Sessions</h5>
+                                <div class="card mb-2 model-learning-card">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">Python Type Hints</h6>
+                                                <small class="text-muted">Custom adapter training</small>
+                                            </div>
+                                            <span class="badge bg-success">Active</span>
+                                        </div>
+                                        <div class="progress mt-2 training-progress">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 45%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-2 model-learning-card">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">Project-Specific Context</h6>
+                                                <small class="text-muted">Learning your codebase patterns</small>
+                                            </div>
+                                            <span class="badge bg-success">Active</span>
+                                        </div>
+                                        <div class="progress mt-2 training-progress">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 72%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-plus-circle"></i> Configure New Adaptation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terminal Output -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Ollama Output</h4>
+                        <button class="btn btn-sm btn-outline-secondary">Clear</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="terminal">
+                            <div>> Starting Ollama server...</div>
+                            <div>GPU: NVIDIA GeForce RTX 3080</div>
+                            <div>CUDA version: 11.8</div>
+                            <div>Listening on 127.0.0.1:11434</div>
+                            <div>> Loading model: granite-code:8b</div>
+                            <div>✓ Model loaded successfully (4.6 GB)</div>
+                            <div>> Running system optimizations...</div>
+                            <div>✓ TensorRT acceleration enabled</div>
+                            <div>✓ CUDA memory growth set to dynamic</div>
+                            <div>✓ Model serving at optimal parameters</div>
+                            <div class="text-success">> Ready for queries!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding new model -->
+    <div class="modal fade" id="addModelModal" tabindex="-1" aria-labelledby="addModelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModelModalLabel">Install New Model</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="modelType" class="form-label">Model Type</label>
+                        <select class="form-select" id="modelType">
+                            <option>IBM Granite</option>
+                            <option>Open Source</option>
+                            <option>Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Available Models</label>
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">granite-code:13b</h6>
+                                        <small>13B parameter code model with superior context understanding</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">13.2 GB</span>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">granite-core:20b</h6>
+                                        <small>Large model with advanced inference capabilities</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">19.8 GB</span>
+                                </div>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">granite-code:3b-instruct</h6>
+                                        <small>Lightweight model optimized for coding tasks</small>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill">2.1 GB</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Advanced Configuration</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="quantizeModel" checked>
+                            <label class="form-check-label" for="quantizeModel">
+                                Quantize model (reduces size, minor quality impact)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="enableCaching" checked>
+                            <label class="form-check-label" for="enableCaching">
+                                Enable response caching
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoTune">
+                            <label class="form-check-label" for="autoTune">
+                                Auto-tune for your hardware
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Install Model</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Theme switcher
+        document.getElementById('themeSwitch').addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // GPU Chart
+        const ctx = document.getElementById('gpuChart').getContext('2d');
+        const gpuChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({ length: 10 }, (_, i) => `${i}m ago`).reverse(),
+                datasets: [{
+                    label: 'GPU Utilization',
+                    data: [5, 8, 15, 20, 25, 30, 25, 20, 15, 25],
+                    borderColor: '#0f62fe',
+                    backgroundColor: 'rgba(15, 98, 254, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Percentage'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Simulated real-time updates
+        setInterval(() => {
+            const newValue = Math.floor(Math.random() * 30) + 10;
+            gpuChart.data.datasets[0].data.shift();
+            gpuChart.data.datasets[0].data.push(newValue);
+            gpuChart.update();
+
+            const gpuProgressBar = document.querySelector('.card:nth-child(3) .progress-bar');
+            gpuProgressBar.style.width = `${newValue}%`;
+            gpuProgressBar.textContent = `${newValue}%`;
+
+            // Update terminal with random events occasionally
+            if (Math.random() > 0.7) {
+                const terminal = document.querySelector('.terminal');
+                const messages = [
+                    '> Processing request: code completion',
+                    '> Optimizing memory allocation',
+                    '> Auto-scaling batch size for optimal performance',
+                    '✓ Completed request in 245ms'
+                ];
+                const newMessage = document.createElement('div');
+                newMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
+                terminal.appendChild(newMessage);
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        }, 3000);
+
+        // Model card selection
+        document.querySelectorAll('.model-card').forEach(card => {
+            card.addEventListener('click', function () {
+                document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // AI Assistant Chat Functions
+        document.getElementById('sendMessageBtn').addEventListener('click', function() {
+            sendMessage();
+        });
+
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        document.getElementById('clearChatBtn').addEventListener('click', function() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '<div class="message ai-message">Chat cleared. How can I help you?</div>';
+        });
+
+        function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const message = userInput.value.trim();
+
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+
+                // Add user message
+                chatMessages.innerHTML += `<div class="message user-message">${escapeHTML(message)}</div>`;
+                userInput.value = '';
+
+                // Simulate thinking
+                setTimeout(() => {
+                    // Add AI response based on the message
+                    let response = getAIResponse(message);
+                    chatMessages.innerHTML += `<div class="message ai-message">${response}</div>`;
+
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 500);
+
+                // Scroll to bottom immediately after user message
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag]));
+        }
+
+        function getAIResponse(message) {
+            message = message.toLowerCase();
+
+            // Simple pattern matching for demo purposes
+            if (message.includes('gpu') || message.includes('performance')) {
+                return "Your GPU performance is optimized. The CUDA acceleration is working properly with TensorRT enabled. Model inference is currently using about 25% of available GPU resources.";
+            } else if (message.includes('model') || message.includes('granite')) {
+                return "You're currently using the granite-code:8b model. This is optimized for code generation tasks. If you need better performance, consider installing the smaller granite-code:3b model, or for higher quality, the granite-code:13b model.";
+            } else if (message.includes('python') || message.includes('code')) {
+                return "I can help with Python coding. For example, I can analyze your code for quality issues, suggest improvements, or help you implement new features. Would you like me to check your current project?";
+            } else if (message.includes('hello') || message.includes('hi')) {
+                return "Hello! I'm your AI assistant for watsonx Code Assistant. I can help you manage your models, optimize performance, or assist with coding tasks.";
+            } else if (message.includes('train') || message.includes('learning')) {
+                return "The system is currently adapting to your codebase patterns. This helps improve code suggestions. You can configure additional training in the AI Model Training section.";
+            } else {
+                return "I'm here to help with your watsonx Code Assistant. I can provide information about models, performance optimization, or help with coding tasks. What would you like to know?";
+            }
+        }
+
+        // Enhanced GPU monitoring
+        function updateSystemMonitoring() {
+            // Update GPU chart with more realistic values
+            const newValue = Math.floor(Math.random() * 40) + 15; // More varied usage patterns
+            gpuChart.data.datasets[0].data.shift();
+            gpuChart.data.datasets[0].data.push(newValue);
+            gpuChart.update();
+
+            const gpuProgressBar = document.querySelector('.card:nth-child(3) .progress-bar');
+            gpuProgressBar.style.width = `${newValue}%`;
+            gpuProgressBar.textContent = `${newValue}%`;
+
+            // Update CPU and RAM usage with slight variations
+            const cpuUsage = Math.floor(Math.random() * 10) + 10;
+            const ramUsage = Math.floor(Math.random() * 0.5 * 100) / 100 + 2.3;
+
+            document.querySelector('.col-md-6:nth-child(2) .progress-bar:nth-child(1)').style.width = `${cpuUsage}%`;
+            document.querySelector('.col-md-6:nth-child(2) .form-label:nth-child(1) span:nth-child(2)').textContent = `${cpuUsage}%`;
+
+            document.querySelector('.col-md-6:nth-child(2) .progress-bar:nth-child(2)').style.width = `${ramUsage/16*100}%`;
+            document.querySelector('.col-md-6:nth-child(2) .form-label:nth-child(2) span:nth-child(2)').textContent = `${ramUsage.toFixed(1)}GB / 16GB`;
+
+            // Update terminal with random events
+            if (Math.random() > 0.8) {
+                const terminal = document.querySelector('.terminal');
+                const messages = [
+                    '> Processing request: code completion',
+                    '> Analyzing workspace code patterns',
+                    '> GPU tensor optimization active',
+                    '> Auto-scaled batch size to 16',
+                    '✓ Completed request in ' + Math.floor(Math.random() * 100 + 150) + 'ms',
+                    '> Memory usage optimized'
+                ];
+                const newMessage = document.createElement('div');
+                newMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
+                terminal.appendChild(newMessage);
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+
+            // Update training progress
+            const trainingBars = document.querySelectorAll('.training-progress .progress-bar');
+            trainingBars.forEach(bar => {
+                let currentWidth = parseInt(bar.style.width);
+                if (currentWidth < 100) {
+                    currentWidth += Math.random() > 0.5 ? 1 : 0;
+                    bar.style.width = `${currentWidth}%`;
+                } else {
+                    // Reset to simulate a new training cycle
+                    bar.style.width = '5%';
+                }
+            });
+        }
+
+        // Run the system monitoring updates more frequently
+        setInterval(updateSystemMonitoring, 2000);
+    </script>
+</body>
+
+</html>

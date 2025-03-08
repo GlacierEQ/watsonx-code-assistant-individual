@@ -43,19 +43,75 @@ Create a comment that describes a function, method, or piece of logic in your ed
 
 Watsonx Code Assistant Individual accesses models through <a href="https://ollama.com" target="_blank">Ollama</a>, which is a widely used local inferencing engine for LLMs. Ollama wraps the underlying model-serving project <a href="https://github.com/ggml-org/llama.cpp" target="_blank">llama.cpp</a>.
 
-### Install Ollama
+### Automated Installation (Linux)
+
+For Linux users, you can use the following automated installation script that installs all necessary components including system dependencies, Python environment, Visual Studio Code, Ollama, and GPU/NPU optimizations:
+
+```bash
+#!/bin/bash
+# Optimized Installation Script for IBM Watsonx Code Assistant Individual
+# Ensures GPU/NPU acceleration, memory optimization, and efficient AI deployment
+
+set -e  # Exit on error
+
+### STEP 1: SYSTEM UPDATE & DEPENDENCIES ###
+echo "🔹 Updating system packages..."
+sudo apt update && sudo apt upgrade -y  # For Debian-based systems
+
+### STEP 2: INSTALL PYTHON & VIRTUAL ENVIRONMENT ###
+echo "🔹 Installing Python & Virtual Environment..."
+sudo apt install -y python3 python3-venv python3-pip
+python3 -m venv watsonx_env
+source watsonx_env/bin/activate
+
+### STEP 3: INSTALL VS CODE ###
+echo "🔹 Installing Visual Studio Code..."
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+echo "deb [arch=amd64] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+sudo apt update
+sudo apt install -y code
+
+### STEP 4: INSTALL OLLAMA (AI MODEL HOSTING) ###
+echo "🔹 Installing Ollama for local AI hosting..."
+curl -fsSL https://ollama.ai/install.sh | sh
+
+### STEP 5: INSTALL CUDA/NPU DRIVERS & TENSOR OPTIMIZATION ###
+echo "🔹 Installing CUDA & TensorFlow/PyTorch optimizations..."
+sudo apt install -y nvidia-cuda-toolkit
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install tensorflow-gpu
+
+### STEP 6: CLONE & SET UP WATSONX CODE ASSISTANT ###
+echo "🔹 Cloning Watsonx Code Assistant Repository..."
+git clone https://github.com/IBM/watsonx-code-assistant-individual.git
+cd watsonx-code-assistant-individual
+pip install -r requirements.txt
+
+### STEP 7: ENABLE GPU/NPU PRIORITY ###
+echo "🔹 Configuring GPU/NPU as primary resource..."
+export CUDA_VISIBLE_DEVICES=0
+export TF_GPU_ALLOCATOR=cuda_malloc_async
+
+### STEP 8: FINAL SETUP & LAUNCH ###
+echo "✅ Installation complete! Launching Watsonx Code Assistant in VS Code..."
+code .
+```
+
+Note: After running this script, you'll still need to install the Granite code model and VS Code extension as described in the sections below.
+
+### Install Ollama (AI Model Hosting)
 
 MacOS, Linux, Windows: Download and run the <a href="https://ollama.com/download" target="_blank">ollama installer</a>
 
 ### If already installed, update Ollama to the latest stable version
-
-#### If you have installed Ollama via package installer:
-Ollama on macOS and Windows will automatically download updates. Click on the taskbar or menubar item, and then click "Restart to update" to apply the update. Updates can also be installed by downloading the latest version manually.
-
 #### On MacOS, If you have installed Ollama via brew, run the command to upgrade:
 ```
 brew upgrade ollama
 ```
+
+#### If you have installed Ollama via package installer:
+Ollama on macOS and Windows will automatically download updates. Click on the taskbar or menubar item, and then click "Restart to update" to apply the update. Updates can also be installed by downloading the latest version manually.
 
 #### On Linux, re-run the install script:
 ```
@@ -74,7 +130,7 @@ Leave that window open while you use Ollama.
 
 If you receive the message `Error: listen tcp 127.0.0.1:11434: bind: address already in use`, the Ollama server is already started. There's nothing else that you need to do.
 
-### Install the Granite code model
+### Install the Granite code model (for AI coding assistance)
 
 Get started with watsonx Code Assistant Individual by installing the `granite-code:8b` model available in the <a href="https://ollama.com/library/granite-code" target="_blank">Ollama library</a>.
 
@@ -116,7 +172,7 @@ This setup is not available for the Eclipse IDE plug-in. It is only available wi
 2. Click **Install** on the Marketplace page.
 3. In Visual Studio Code, click **Install** on the extension.
 
-### Configure the Ollama host
+### Configure the Ollama host (if using a different IP or port)
 
 By default, the Ollama server runs on IP address `127.0.0.1`, port `11434`, using http as a protocol. If you change the IP address or the port where Ollama is available:
 
@@ -134,7 +190,7 @@ To use a different model:
 2. Open the extension settings.
 3. Update the model name for either _Local Code Gen Model_ to `granite-code:8b-base`.
 
-### Securing your setup
+### Securing your setup (Best Practices)
 
 #### Your Visual Studio Code environment
 
@@ -241,65 +297,3 @@ To rename a chat conversation:
 - If you find the answers become less relevant, or if you start a new task, create a new chat conversation, and work from there. It is better to have many short chat conversations, each with a specific context, rather than one large conversation that might confuse the model with different and unrelated chat messages.
 
 Watsonx Code Assistant Individual and the Granite code models are created to answer questions that are related to code, general programming, and software engineering. While the IDE doesn’t restrict your questions or prompts, the Granite code models are not designed for language tasks. Any such use is at your own risk, and results can be unreliable so validate all output independently and consider deploying a Hate Abuse Profanity (HAP) filter.
-
-## Using in-editor code completion and comment-to-code
-
-### Single-line completion
-
-1. Start typing a line of code.
-2. Watsonx Code Assistant Individual adds a code suggestion to complete the line that you typed.
-3. Press **Tab** to accept the suggestion.
-
-<img src="https://github.com/ibm-granite/watsonx-code-assistant-individual/raw/HEAD/images/Single-line.gif" height=200 alt="Single-line completion in watsonx Code Assistant Individual">
-
-### Multi-line completion
-
-1. Start typing a line of code.
-2. Press `Option` + `.` (Mac) or `Alt`+ `.` (Windows)
-3. Watsonx Code Assistant Individual adds a code suggestion to complete the line that you typed, and adds code lines.
-4. Press **Tab** to accept the suggestion.
-
-<img src="https://github.com/ibm-granite/watsonx-code-assistant-individual/raw/HEAD/images/Multi-line.gif" height=350 alt="Multi-line completion in watsonx Code Assistant Individual">
-
-### Comment-to-code
-
-1. Type a comment.
-2. Press `Option` + `.` (Mac) or `Alt`+ `.` (Windows)
-3. Watsonx Code Assistant Individual adds a code suggestion based on your comment.
-4. Press **Tab** to accept the suggestion.
-
-<img src="https://github.com/ibm-granite/watsonx-code-assistant-individual/raw/HEAD/images/comment-to-code.gif" height=200 alt="Comment to code generation in watsonx Code Assistant Individual">
-
-### Tips for generating code
-
-#### Chat for larger code blocks. Use in-editor code generation for refinement and boilerplate code
-
-Use chat to:
-
-- Generate the overall outline of a class
-- Specify a method in detail
-- Refine the suggested code with more instructions (for example, rename or replace)
-
-Use in-editor code generation to:
-
-- Complete a line of code you start to type
-- Automatically create boilerplate code-like getters and setters
-- Create methods and code that can be described with a single comment line
-
-#### Comment-to-code: use descriptive comments, not instructions
-
-When you use comment-to-code in the editor, write a comment that describes the intended behavior - as you do when you write comments for code you wrote. For example, use `//return even numbers from an arraylist` or `//method that returns even numbers from an arraylist`. Don't write your comment as an instruction, such as `//write a method that returns even numbers from an arraylist`. Granite models are trained to complete code on data that contains many "typical", descriptive comments, so these kinds of comments yield better results.
-
-#### Context used for in-editor code generation
-
-The key ingredient for code generation is the context, that is, the surrounding code you pass to the model. For in-editor code generation, watsonx Code Assistant Individual uses the following context:
-
-1. The 20 lines of code before the line where the generation is triggered.
-2. The 20 lines of code after the line where the generation is triggered.
-3. Up to 200 lines from the beginning of the current file where generation is triggered.
-4. Up to 5 code snippets that are similar to the code that surrounds the line where generation was triggered. These snippets are taken from the last 10 files that you opened that are in the same programming language as the current file.
-
-To improve the results of in-editor code generation:
-
-- Open files in your workspace that have code you want watsonx Code Assistant Individual to know about. Watsonx Code Assistant Individual tries to find code in these files that is similar to the place where you trigger completion, for example, methods that use similar classes and variables, and sends this code to the model as context.
-- Don’t use in-editor code generation when you start from scratch. Code generation in almost empty files might not have enough context. You can help watsonx Code Assistant Individual by starting with a class definition or adding import statements. You can also use the watsonx Code Assistant Individual chat to create the initial outline, copy the result into a file in your workspace, and continue with in-editor code generation.
