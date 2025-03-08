@@ -1,0 +1,95 @@
+:root {
+    --primary-color: #0f62fe;
+    --secondary-color: #393939;
+    --success-color: #24a148;
+    --warning-color: #f1c21b;
+    --danger-color: #da1e28;
+    --light-bg: #f4f4f4;
+    --dark-bg: #262626;
+    --text-light: #ffffff;
+    --text-dark: #161616;
+}
+
+body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+    padding: 0;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+}
+
+.sidebar {
+    height: 100vh;
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    transition: width 0.3s;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.main-content {
+    transition: margin-left 0.3s;
+}
+
+/* Accessibility improvements */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+:focus {
+    outline: 3px solid var(--primary-color) !important;
+    outline-offset: 2px !important;
+}
+
+.skip-link {
+    background: var(--primary-color);
+    color: white;
+    left: 50%;
+    padding: 8px;
+    position: absolute;
+    transform: translateY(-100%);
+    transition: transform 0.3s;
+}
+
+.skip-link:focus {
+    transform: translateY(0%);
+    z-index: 9999;
+}
+
+/* Loading states */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 0.2s, opacity 0.2s;
+}
+
+.loading-overlay.visible {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+}

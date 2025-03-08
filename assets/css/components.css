@@ -1,0 +1,99 @@
+/* Card Components */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 20px;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Terminal Component */
+.terminal {
+    background-color: #1a1a1a;
+    color: #f1f1f1;
+    border-radius: 8px;
+    padding: 15px;
+    font-family: 'IBM Plex Mono', monospace;
+    height: 300px;
+    overflow-y: auto;
+}
+
+/* Charts */
+.gpu-chart {
+    height: 200px;
+    width: 100%;
+}
+
+/* Model Cards */
+.model-card {
+    cursor: pointer;
+}
+
+.model-card.active {
+    border: 2px solid var(--primary-color);
+}
+
+/* AI Training Components */
+.training-progress {
+    height: 5px;
+}
+
+.model-learning-card {
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Voice Command Button */
+.voice-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.voice-btn:hover {
+    transform: scale(1.1);
+}
+
+.voice-btn.recording {
+    background-color: var(--danger-color);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(218, 30, 40, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(218, 30, 40, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(218, 30, 40, 0);
+    }
+}

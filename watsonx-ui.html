@@ -239,7 +239,118 @@
         .model-learning-card {
             border-left: 4px solid var(--primary-color);
         }
+
+        /* New Voice Interaction Styles */
+        .voice-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .voice-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-btn.recording {
+            background-color: var(--danger-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(218, 30, 40, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(218, 30, 40, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(218, 30, 40, 0);
+            }
+        }
+
+        /* Code Review Styles */
+        .review-item {
+            border-left: 4px solid transparent;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 5px;
+        }
+
+        .review-item.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .review-item.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .review-item.improvement {
+            border-left-color: var(--primary-color);
+        }
+
+        .review-item.security {
+            border-left-color: #8a3ffc;
+        }
+
+        .code-snippet {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: #2d2d2d;
+            color: #e6e6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        /* Prompt Engineering Styles */
+        .prompt-builder {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .prompt-module {
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: move;
+        }
+
+        .prompt-module-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .prompt-template {
+            border-left: 3px solid var(--primary-color);
+            padding: 10px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .prompt-template:hover {
+            background-color: rgba(15, 98, 254, 0.05);
+        }
     </style>
+    <!-- Add Web Speech API polyfill -->
+    <script src="https://cdn.jsdelivr.net/npm/web-speech-polyfill@1.0.0/lib/web-speech-polyfill.min.js"></script>
 </head>
 
 <body>
@@ -394,473 +505,957 @@
                     </div>
                 </div>
 
-                <!-- New: AI Assistant & Code Quality Analysis -->
-                <div class="row mb-4">
-                    <!-- AI Assistant -->
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h4 class="mb-0">AI Assistant</h4>
-                                <button class="btn btn-sm btn-outline-primary" id="clearChatBtn">
-                                    <i class="bi bi-trash"></i> Clear Chat
-                                </button>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="chat-container">
-                                    <div class="chat-messages" id="chatMessages">
-                                        <div class="message ai-message">
-                                            Hello! I'm your Watsonx Code Assistant. How can I help you today?
-                                        </div>
-                                    </div>
-                                    <div class="chat-input">
-                                        <input type="text" id="userInput" placeholder="Ask about models, performance, or coding help...">
-                                        <button class="btn btn-primary" id="sendMessageBtn">
-                                            <i class="bi bi-send"></i>
+                <!-- New Tabs Navigation -->
+                <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab"
+                            data-bs-target="#dashboard" type="button" role="tab" aria-controls="dashboard"
+                            aria-selected="true">
+                            Dashboard
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="codereview-tab" data-bs-toggle="tab" data-bs-target="#codereview"
+                            type="button" role="tab" aria-controls="codereview" aria-selected="false">
+                            AI Code Review
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="promptengine-tab" data-bs-toggle="tab"
+                            data-bs-target="#promptengine" type="button" role="tab" aria-controls="promptengine"
+                            aria-selected="false">
+                            Prompt Engineer
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="advanced-tab" data-bs-toggle="tab" data-bs-target="#advanced"
+                            type="button" role="tab" aria-controls="advanced" aria-selected="false">
+                            Advanced
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="mainTabsContent">
+                    <!-- Dashboard Tab (existing content) -->
+                    <div class="tab-pane fade show active" id="dashboard" role="tabpanel"
+                        aria-labelledby="dashboard-tab">
+                        <!-- AI Assistant & Code Quality Analysis -->
+                        <div class="row mb-4">
+                            <!-- AI Assistant -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h4 class="mb-0">AI Assistant</h4>
+                                        <button class="btn btn-sm btn-outline-primary" id="clearChatBtn">
+                                            <i class="bi bi-trash"></i> Clear Chat
                                         </button>
                                     </div>
+                                    <div class="card-body p-0">
+                                        <div class="chat-container">
+                                            <div class="chat-messages" id="chatMessages">
+                                                <div class="message ai-message">
+                                                    Hello! I'm your Watsonx Code Assistant. How can I help you today?
+                                                </div>
+                                            </div>
+                                            <div class="chat-input">
+                                                <input type="text" id="userInput"
+                                                    placeholder="Ask about models, performance, or coding help...">
+                                                <button class="btn btn-primary" id="sendMessageBtn">
+                                                    <i class="bi bi-send"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Code Quality Analysis -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4>Code Quality Analysis</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <select class="form-select mb-3" id="projectSelect">
+                                                <option value="current">Current Project</option>
+                                                <option value="recent1">Recent: python-data-analysis</option>
+                                                <option value="recent2">Recent: node-api-service</option>
+                                            </select>
+
+                                            <div class="code-quality-metric">
+                                                <span class="metric-name">Code Quality Score</span>
+                                                <span class="metric-score text-success">A (92%)</span>
+                                            </div>
+
+                                            <div class="code-quality-metric">
+                                                <span class="metric-name">Test Coverage</span>
+                                                <span class="metric-score text-warning">78%</span>
+                                            </div>
+
+                                            <div class="code-quality-metric">
+                                                <span class="metric-name">Security Rating</span>
+                                                <span class="metric-score text-success">Low Risk</span>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <h6>AI Suggestions</h6>
+                                                <div>
+                                                    <span class="suggestion-badge">Add unit tests for auth.js</span>
+                                                    <span class="suggestion-badge">Refactor duplicated code in
+                                                        utils/</span>
+                                                    <span class="suggestion-badge">Optimize DB queries in
+                                                        user.service.ts</span>
+                                                    <span class="suggestion-badge">Update dependencies with
+                                                        vulnerabilities</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Code Quality Analysis -->
-                    <div class="col-md-6">
-                        <div class="card">
+                        <!-- Performance Insights & Model Training -->
+                        <div class="card mb-4">
                             <div class="card-header">
-                                <h4>Code Quality Analysis</h4>
+                                <h4>AI Model Training & Adaptation</h4>
                             </div>
                             <div class="card-body">
-                                <div class="mb-3">
-                                    <select class="form-select mb-3" id="projectSelect">
-                                        <option value="current">Current Project</option>
-                                        <option value="recent1">Recent: python-data-analysis</option>
-                                        <option value="recent2">Recent: node-api-service</option>
-                                    </select>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5>Model Performance Insights</h5>
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Response Quality</span>
+                                                <span>87%</ </div>
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-success" role="progressbar"
+                                                            style="width: 87%"></div>
+                                                    </div>
+                                            </div>
 
-                                    <div class="code-quality-metric">
-                                        <span class="metric-name">Code Quality Score</span>
-                                        <span class="metric-score text-success">A (92%)</span>
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Code Accuracy</span>
+                                                    <span>92%</span>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                        style="width: 92%"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Contextual Understanding</span>
+                                                    <span>84%</span>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-primary" role="progressbar"
+                                                        style="width: 84%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <h5>Active Learning Sessions</h5>
+                                            <div class="card mb-2 model-learning-card">
+                                                <div class="card-body py-2">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <h6 class="mb-0">Python Type Hints</h6>
+                                                            <small class="text-muted">Custom adapter training</small>
+                                                        </div>
+                                                        <span class="badge bg-success">Active</span>
+                                                    </div>
+                                                    <div class="progress mt-2 training-progress">
+                                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                            style="width: 45%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="card mb-2 model-learning-card">
+                                                <div class="card-body py-2">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <h6 class="mb-0">Project-Specific Context</h6>
+                                                            <small class="text-muted">Learning your codebase
+                                                                patterns</small>
+                                                        </div>
+                                                        <span class="badge bg-success">Active</span>
+                                                    </div>
+                                                    <div class="progress mt-2 training-progress">
+                                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                            style="width: 72%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-plus-circle"></i> Configure New Adaptation
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Terminal Output -->
+                            <div class="card mb-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="mb-0">Ollama Output</h4>
+                                    <button class="btn btn-sm btn-outline-secondary">Clear</button>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="terminal">
+                                        <div>> Starting Ollama server...</div>
+                                        <div>GPU: NVIDIA GeForce RTX 3080</div>
+                                        <div>CUDA version: 11.8</div>
+                                        <div>Listening on 127.0.0.1:11434</div>
+                                        <div>> Loading model: granite-code:8b</div>
+                                        <div>✓ Model loaded successfully (4.6 GB)</div>
+                                        <div>> Running system optimizations...</div>
+                                        <div>✓ TensorRT acceleration enabled</div>
+                                        <div>✓ CUDA memory growth set to dynamic</div>
+                                        <div>✓ Model serving at optimal parameters</div>
+                                        <div class="text-success">> Ready for queries!</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Code Review Tab -->
+                        <div class="tab-pane fade" id="codereview" role="tabpanel" aria-labelledby="codereview-tab">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h4 class="mb-0">AI Code Review</h4>
+                                    <button class="btn btn-primary" id="startCodeReviewBtn">
+                                        <i class="bi bi-search"></i> Start New Review
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control"
+                                                placeholder="Enter file path or upload file" id="codeReviewPath">
+                                            <button class="btn btn-outline-secondary" type="button">
+                                                <i class="bi bi-folder"></i> Browse
+                                            </button>
+                                            <button class="btn btn-outline-secondary" type="button">
+                                                <i class="bi bi-upload"></i> Upload
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div class="code-quality-metric">
-                                        <span class="metric-name">Test Coverage</span>
-                                        <span class="metric-score text-warning">78%</span>
+                                    <!-- Review options -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="reviewPerformance"
+                                                    checked>
+                                                <label class="form-check-label" for="reviewPerformance">Performance
+                                                    Issues</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="reviewSecurity"
+                                                    checked>
+                                                <label class="form-check-label" for="reviewSecurity">Security
+                                                    Vulnerabilities</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="reviewStyle"
+                                                    checked>
+                                                <label class="form-check-label" for="reviewStyle">Style & Best
+                                                    Practices</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="reviewBugs" checked>
+                                                <label class="form-check-label" for="reviewBugs">Potential Bugs</label>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div class="code-quality-metric">
-                                        <span class="metric-name">Security Rating</span>
-                                        <span class="metric-score text-success">Low Risk</span>
-                                    </div>
+                                    <!-- Review Results -->
+                                    <div id="reviewResults">
+                                        <h5 class="mb-3">Review Results</h5>
 
-                                    <div class="mt-3">
-                                        <h6>AI Suggestions</h6>
+                                        <!-- Summary -->
+                                        <div class="alert alert-info mb-3">
+                                            <h6 class="mb-1">Analysis Summary</h6>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>Analyzed 12 files (2,450 lines of code)</div>
+                                                <div>
+                                                    <span class="badge bg-danger me-1">4 Critical</span>
+                                                    <span class="badge bg-warning me-1">7 Warnings</span>
+                                                    <span class="badge bg-primary">15 Suggestions</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Individual Issues -->
+                                        <div class="review-item error">
+                                            <div class="d-flex justify-content-between">
+                                                <strong>SQL Injection Vulnerability</strong>
+                                                <span class="badge bg-danger">Critical Security</span>
+                                            </div>
+                                            <p>User input is directly concatenated into SQL query without sanitization.
+                                            </p>
+                                            <div class="code-snippet">
+                                                <pre>query = "SELECT * FROM users WHERE username = '" + username + "'";</pre>
+                                            </div>
+                                            <div class="mt-2">
+                                                <button class="btn btn-sm btn-outline-primary">Show Fix</button>
+                                                <button class="btn btn-sm btn-outline-secondary ms-2">Ignore</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="review-item warning">
+                                            <div class="d-flex justify-content-between">
+                                                <strong>Inefficient Database Query</strong>
+                                                <span class="badge bg-warning">Performance</span>
+                                            </div>
+                                            <p>This query is executed within a loop, causing N+1 query problem.</p>
+                                            <div class="code-snippet">
+                                                <pre>for (user of users) {
+  const roles = await db.query("SELECT * FROM roles WHERE user_id = " + user.id);
+}</pre>
+                                            </div>
+                                            <div class="mt-2">
+                                                <button class="btn btn-sm btn-outline-primary">Show Fix</button>
+                                                <button class="btn btn-sm btn-outline-secondary ms-2">Ignore</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="review-item improvement">
+                                            <div class="d-flex justify-content-between">
+                                                <strong>Code Duplication</strong>
+                                                <span class="badge bg-primary">Maintainability</span>
+                                            </div>
+                                            <p>This validation logic is duplicated in 3 different files.</p>
+                                            <div class="code-snippet">
+                                                <pre>if (!email || !email.includes('@') || !email.includes('.')) {
+  return res.status(400).send('Invalid email');
+}</pre>
+                                            </div>
+                                            <div class="mt-2">
+                                                <button class="btn btn-sm btn-outline-primary">Show Fix</button>
+                                                <button class="btn btn-sm btn-outline-secondary ms-2">Ignore</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="review-item security">
+                                            <div class="d-flex justify-content-between">
+                                                <strong>Outdated Dependency</strong>
+                                                <span class="badge bg-secondary">Security</span>
+                                            </div>
+                                            <p>Package 'crypto-js' is using version 3.1.9 with known vulnerabilities.
+                                            </p>
+                                            <div class="mt-2">
+                                                <button class="btn btn-sm btn-outline-primary">Upgrade Package</button>
+                                                <button class="btn btn-sm btn-outline-secondary ms-2">Ignore</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Prompt Engineering Tab -->
+                        <div class="tab-pane fade" id="promptengine" role="tabpanel" aria-labelledby="promptengine-tab">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Advanced Prompt Engineering</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <h5>Prompt Modules</h5>
+                                            <p class="text-muted">Drag modules to build your prompt</p>
+
+                                            <div class="prompt-module">
+                                                <div class="prompt-module-header">Code Generation</div>
+                                                <small>Optimize for generating high-quality code</small>
+                                            </div>
+
+                                            <div class="prompt-module">
+                                                <div class="prompt-module-header">Code Explanation</div>
+                                                <small>Analyze and explain existing code</small>
+                                            </div>
+
+                                            <div class="prompt-module">
+                                                <div class="prompt-module-header">Refactoring</div>
+                                                <small>Improve code structure and design</small>
+                                            </div>
+
+                                            <div class="prompt-module">
+                                                <div class="prompt-module-header">Debugging</div>
+                                                <small>Find and fix errors in code</small>
+                                            </div>
+
+                                            <div class="prompt-module">
+                                                <div class="prompt-module-header">Testing</div>
+                                                <small>Generate test cases and testing code</small>
+                                            </div>
+
+                                            <hr>
+
+                                            <h5>Templates</h5>
+                                            <div class="prompt-template">
+                                                <strong>Bug Fixer Pro</strong>
+                                                <div class="text-muted small">Specialized for fixing bugs with detailed
+                                                    explanation</div>
+                                            </div>
+
+                                            <div class="prompt-template">
+                                                <strong>Code Architect</strong>
+                                                <div class="text-muted small">For designing robust software architecture
+                                                </div>
+                                            </div>
+
+                                            <div class="prompt-template">
+                                                <strong>Optimization Expert</strong>
+                                                <div class="text-muted small">Focus on performance and efficiency</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <h5>Prompt Builder</h5>
+                                            <div class="prompt-builder" id="promptDropZone">
+                                                <div class="text-center text-muted p-5">
+                                                    <i class="bi bi-arrows-move fs-1"></i>
+                                                    <p>Drag modules here to build your prompt</p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="customPromptText" class="form-label">Custom
+                                                    Instructions</label>
+                                                <textarea class="form-control" id="customPromptText" rows="5"
+                                                    placeholder="Add additional instructions, context, or requirements..."></textarea>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label d-flex justify-content-between">
+                                                    <span>Creativity vs Precision</span>
+                                                    <span id="creativityValue">Balanced</span>
+                                                </label>
+                                                <input type="range" class="form-range" min="0" max="10" step="1"
+                                                    value="5" id="creativitySlider">
+                                                <div class="d-flex justify-content-between text-muted">
+                                                    <small>More Precise</small>
+                                                    <small>More Creative</small>
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex">
+                                                <button class="btn btn-primary me-2" id="savePromptBtn">
+                                                    Save Prompt
+                                                </button>
+                                                <button class="btn btn-success" id="executePromptBtn">
+                                                    Execute
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Settings Tab -->
+                        <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
+                            <!-- Advanced settings content here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voice Command Button -->
+        <button class="voice-btn" id="voiceCommandBtn">
+            <i class="bi bi-mic"></i>
+        </button>
+
+        <!-- Modal for adding new model -->
+        <div class="modal fade" id="addModelModal" tabindex="-1" aria-labelledby="addModelModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModelModalLabel">Install New Model</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="modelType" class="form-label">Model Type</label>
+                            <select class="form-select" id="modelType">
+                                <option>IBM Granite</option>
+                                <option>Open Source</option>
+                                <option>Custom</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Available Models</label>
+                            <div class="list-group">
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <div>
-                                            <span class="suggestion-badge">Add unit tests for auth.js</span>
-                                            <span class="suggestion-badge">Refactor duplicated code in utils/</span>
-                                            <span class="suggestion-badge">Optimize DB queries in user.service.ts</span>
-                                            <span class="suggestion-badge">Update dependencies with vulnerabilities</span>
+                                            <h6 class="mb-1">granite-code:13b</h6>
+                                            <small>13B parameter code model with superior context understanding</small>
                                         </div>
+                                        <span class="badge bg-primary rounded-pill">13.2 GB</span>
                                     </div>
-                                </div>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">granite-core:20b</h6>
+                                            <small>Large model with advanced inference capabilities</small>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">19.8 GB</span>
+                                    </div>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">granite-code:3b-instruct</h6>
+                                            <small>Lightweight model optimized for coding tasks</small>
+                                        </div>
+                                        <span class="badge bg-success rounded-pill">2.1 GB</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Advanced Configuration</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="quantizeModel" checked>
+                                <label class="form-check-label" for="quantizeModel">
+                                    Quantize model (reduces size, minor quality impact)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enableCaching" checked>
+                                <label class="form-check-label" for="enableCaching">
+                                    Enable response caching
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="autoTune">
+                                <label class="form-check-label" for="autoTune">
+                                    Auto-tune for your hardware
+                                </label>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- New: Performance Insights & Model Training -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4>AI Model Training & Adaptation</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5>Model Performance Insights</h5>
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>Response Quality</span>
-                                        <span>87%</span>
-                                    </div>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 87%"></div>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>Code Accuracy</span>
-                                        <span>92%</span>
-                                    </div>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 92%"></div>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>Contextual Understanding</span>
-                                        <span>84%</span>
-                                    </div>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 84%"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <h5>Active Learning Sessions</h5>
-                                <div class="card mb-2 model-learning-card">
-                                    <div class="card-body py-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-0">Python Type Hints</h6>
-                                                <small class="text-muted">Custom adapter training</small>
-                                            </div>
-                                            <span class="badge bg-success">Active</span>
-                                        </div>
-                                        <div class="progress mt-2 training-progress">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 45%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card mb-2 model-learning-card">
-                                    <div class="card-body py-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-0">Project-Specific Context</h6>
-                                                <small class="text-muted">Learning your codebase patterns</small>
-                                            </div>
-                                            <span class="badge bg-success">Active</span>
-                                        </div>
-                                        <div class="progress mt-2 training-progress">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 72%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-plus-circle"></i> Configure New Adaptation
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Terminal Output -->
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Ollama Output</h4>
-                        <button class="btn btn-sm btn-outline-secondary">Clear</button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="terminal">
-                            <div>> Starting Ollama server...</div>
-                            <div>GPU: NVIDIA GeForce RTX 3080</div>
-                            <div>CUDA version: 11.8</div>
-                            <div>Listening on 127.0.0.1:11434</div>
-                            <div>> Loading model: granite-code:8b</div>
-                            <div>✓ Model loaded successfully (4.6 GB)</div>
-                            <div>> Running system optimizations...</div>
-                            <div>✓ TensorRT acceleration enabled</div>
-                            <div>✓ CUDA memory growth set to dynamic</div>
-                            <div>✓ Model serving at optimal parameters</div>
-                            <div class="text-success">> Ready for queries!</div>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary">Install Model</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal for adding new model -->
-    <div class="modal fade" id="addModelModal" tabindex="-1" aria-labelledby="addModelModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addModelModalLabel">Install New Model</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="modelType" class="form-label">Model Type</label>
-                        <select class="form-select" id="modelType">
-                            <option>IBM Granite</option>
-                            <option>Open Source</option>
-                            <option>Custom</option>
-                        </select>
-                    </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Theme switcher
+            document.getElementById('themeSwitch').addEventListener('click', function () {
+                document.body.classList.toggle('dark-mode');
+            });
 
-                    <div class="mb-3">
-                        <label class="form-label">Available Models</label>
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">granite-code:13b</h6>
-                                        <small>13B parameter code model with superior context understanding</small>
-                                    </div>
-                                    <span class="badge bg-primary rounded-pill">13.2 GB</span>
-                                </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">granite-core:20b</h6>
-                                        <small>Large model with advanced inference capabilities</small>
-                                    </div>
-                                    <span class="badge bg-primary rounded-pill">19.8 GB</span>
-                                </div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">granite-code:3b-instruct</h6>
-                                        <small>Lightweight model optimized for coding tasks</small>
-                                    </div>
-                                    <span class="badge bg-success rounded-pill">2.1 GB</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Advanced Configuration</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="quantizeModel" checked>
-                            <label class="form-check-label" for="quantizeModel">
-                                Quantize model (reduces size, minor quality impact)
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="enableCaching" checked>
-                            <label class="form-check-label" for="enableCaching">
-                                Enable response caching
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="autoTune">
-                            <label class="form-check-label" for="autoTune">
-                                Auto-tune for your hardware
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary">Install Model</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Theme switcher
-        document.getElementById('themeSwitch').addEventListener('click', function () {
-            document.body.classList.toggle('dark-mode');
-        });
-
-        // GPU Chart
-        const ctx = document.getElementById('gpuChart').getContext('2d');
-        const gpuChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: Array.from({ length: 10 }, (_, i) => `${i}m ago`).reverse(),
-                datasets: [{
-                    label: 'GPU Utilization',
-                    data: [5, 8, 15, 20, 25, 30, 25, 20, 15, 25],
-                    borderColor: '#0f62fe',
-                    backgroundColor: 'rgba(15, 98, 254, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        title: {
-                            display: true,
-                            text: 'Percentage'
+            // GPU Chart
+            const ctx = document.getElementById('gpuChart').getContext('2d');
+            const gpuChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: 10 }, (_, i) => `${i}m ago`).reverse(),
+                    datasets: [{
+                        label: 'GPU Utilization',
+                        data: [5, 8, 15, 20, 25, 30, 25, 20, 15, 25],
+                        borderColor: '#0f62fe',
+                        backgroundColor: 'rgba(15, 98, 254, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Percentage'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
                         }
                     }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+                }
+            });
+
+            // Simulated real-time updates
+            setInterval(() => {
+                const newValue = Math.floor(Math.random() * 30) + 10;
+                gpuChart.data.datasets[0].data.shift();
+                gpuChart.data.datasets[0].data.push(newValue);
+                gpuChart.update();
+
+                const gpuProgressBar = document.querySelector('.card:nth-child(3) .progress-bar');
+                gpuProgressBar.style.width = `${newValue}%`;
+                gpuProgressBar.textContent = `${newValue}%`;
+
+                // Update terminal with random events occasionally
+                if (Math.random() > 0.7) {
+                    const terminal = document.querySelector('.terminal');
+                    const messages = [
+                        '> Processing request: code completion',
+                        '> Optimizing memory allocation',
+                        '> Auto-scaling batch size for optimal performance',
+                        '✓ Completed request in 245ms'
+                    ];
+                    const newMessage = document.createElement('div');
+                    newMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
+                    terminal.appendChild(newMessage);
+                    terminal.scrollTop = terminal.scrollHeight;
+                }
+            }, 3000);
+
+            // Model card selection
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.addEventListener('click', function () {
+                    document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // AI Assistant Chat Functions
+            document.getElementById('sendMessageBtn').addEventListener('click', function () {
+                sendMessage();
+            });
+
+            document.getElementById('userInput').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            document.getElementById('clearChatBtn').addEventListener('click', function () {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '<div class="message ai-message">Chat cleared. How can I help you?</div>';
+            });
+
+            function sendMessage() {
+                const userInput = document.getElementById('userInput');
+                const message = userInput.value.trim();
+
+                if (message) {
+                    const chatMessages = document.getElementById('chatMessages');
+
+                    // Add user message
+                    chatMessages.innerHTML += `<div class="message user-message">${escapeHTML(message)}</div>`;
+                    userInput.value = '';
+
+                    // Simulate thinking
+                    setTimeout(() => {
+                        // Add AI response based on the message
+                        let response = getAIResponse(message);
+                        chatMessages.innerHTML += `<div class="message ai-message">${response}</div>`;
+
+                        // Scroll to bottom
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 500);
+
+                    // Scroll to bottom immediately after user message
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
             }
-        });
 
-        // Simulated real-time updates
-        setInterval(() => {
-            const newValue = Math.floor(Math.random() * 30) + 10;
-            gpuChart.data.datasets[0].data.shift();
-            gpuChart.data.datasets[0].data.push(newValue);
-            gpuChart.update();
-
-            const gpuProgressBar = document.querySelector('.card:nth-child(3) .progress-bar');
-            gpuProgressBar.style.width = `${newValue}%`;
-            gpuProgressBar.textContent = `${newValue}%`;
-
-            // Update terminal with random events occasionally
-            if (Math.random() > 0.7) {
-                const terminal = document.querySelector('.terminal');
-                const messages = [
-                    '> Processing request: code completion',
-                    '> Optimizing memory allocation',
-                    '> Auto-scaling batch size for optimal performance',
-                    '✓ Completed request in 245ms'
-                ];
-                const newMessage = document.createElement('div');
-                newMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
-                terminal.appendChild(newMessage);
-                terminal.scrollTop = terminal.scrollHeight;
+            function escapeHTML(str) {
+                return str.replace(/[&<>'"]/g,
+                    tag => ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        "'": '&#39;',
+                        '"': '&quot;'
+                    }[tag]));
             }
-        }, 3000);
 
-        // Model card selection
-        document.querySelectorAll('.model-card').forEach(card => {
-            card.addEventListener('click', function () {
-                document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
+            function getAIResponse(message) {
+                message = message.toLowerCase();
 
-        // AI Assistant Chat Functions
-        document.getElementById('sendMessageBtn').addEventListener('click', function() {
-            sendMessage();
-        });
-
-        document.getElementById('userInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+                // Simple pattern matching for demo purposes
+                if (message.includes('gpu') || message.includes('performance')) {
+                    return "Your GPU performance is optimized. The CUDA acceleration is working properly with TensorRT enabled. Model inference is currently using about 25% of available GPU resources.";
+                } else if (message.includes('model') || message.includes('granite')) {
+                    return "You're currently using the granite-code:8b model. This is optimized for code generation tasks. If you need better performance, consider installing the smaller granite-code:3b model, or for higher quality, the granite-code:13b model.";
+                } else if (message.includes('python') || message.includes('code')) {
+                    return "I can help with Python coding. For example, I can analyze your code for quality issues, suggest improvements, or help you implement new features. Would you like me to check your current project?";
+                } else if (message.includes('hello') || message.includes('hi')) {
+                    return "Hello! I'm your AI assistant for watsonx Code Assistant. I can help you manage your models, optimize performance, or assist with coding tasks.";
+                } else if (message.includes('train') || message.includes('learning')) {
+                    return "The system is currently adapting to your codebase patterns. This helps improve code suggestions. You can configure additional training in the AI Model Training section.";
+                } else {
+                    return "I'm here to help with your watsonx Code Assistant. I can provide information about models, performance optimization, or help with coding tasks. What would you like to know?";
+                }
             }
-        });
 
-        document.getElementById('clearChatBtn').addEventListener('click', function() {
-            const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = '<div class="message ai-message">Chat cleared. How can I help you?</div>';
-        });
+            // Enhanced GPU monitoring
+            function updateSystemMonitoring() {
+                // Update GPU chart with more realistic values
+                const newValue = Math.floor(Math.random() * 40) + 15; // More varied usage patterns
+                gpuChart.data.datasets[0].data.shift();
+                gpuChart.data.datasets[0].data.push(newValue);
+                gpuChart.update();
 
-        function sendMessage() {
-            const userInput = document.getElementById('userInput');
-            const message = userInput.value.trim();
+                const gpuProgressBar = document.querySelector('.card:nth-child(3) .progress-bar');
+                gpuProgressBar.style.width = `${newValue}%`;
+                gpuProgressBar.textContent = `${newValue}%`;
 
-            if (message) {
+                // Update CPU and RAM usage with slight variations
+                const cpuUsage = Math.floor(Math.random() * 10) + 10;
+                const ramUsage = Math.floor(Math.random() * 0.5 * 100) / 100 + 2.3;
+
+                document.querySelector('.col-md-6:nth-child(2) .progress-bar:nth-child(1)').style.width = `${cpuUsage}%`;
+                document.querySelector('.col-md-6:nth-child(2) .form-label:nth-child(1) span:nth-child(2)').textContent = `${cpuUsage}%`;
+
+                document.querySelector('.col-md-6:nth-child(2) .progress-bar:nth-child(2)').style.width = `${ramUsage / 16 * 100}%`;
+                document.querySelector('.col-md-6:nth-child(2) .form-label:nth-child(2) span:nth-child(2)').textContent = `${ramUsage.toFixed(1)}GB / 16GB`;
+
+                // Update terminal with random events
+                if (Math.random() > 0.8) {
+                    const terminal = document.querySelector('.terminal');
+                    const messages = [
+                        '> Processing request: code completion',
+                        '> Analyzing workspace code patterns',
+                        '> GPU tensor optimization active',
+                        '> Auto-scaled batch size to 16',
+                        '✓ Completed request in ' + Math.floor(Math.random() * 100 + 150) + 'ms',
+                        '> Memory usage optimized'
+                    ];
+                    const newMessage = document.createElement('div');
+                    newMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
+                    terminal.appendChild(newMessage);
+                    terminal.scrollTop = terminal.scrollHeight;
+                }
+
+                // Update training progress
+                const trainingBars = document.querySelectorAll('.training-progress .progress-bar');
+                trainingBars.forEach(bar => {
+                    let currentWidth = parseInt(bar.style.width);
+                    if (currentWidth < 100) {
+                        currentWidth += Math.random() > 0.5 ? 1 : 0;
+                        bar.style.width = `${currentWidth}%`;
+                    } else {
+                        // Reset to simulate a new training cycle
+                        bar.style.width = '5%';
+                    }
+                });
+            }
+
+            // Run the system monitoring updates more frequently
+            setInterval(updateSystemMonitoring, 2000);
+        </script>
+
+        <!-- Add Voice Command Scripts -->
+        <script>
+            // Voice Control Implementation
+            const voiceCommandBtn = document.getElementById('voiceCommandBtn');
+            let isRecording = false;
+            let recognition;
+
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+
+                recognition.onstart = () => {
+                    console.log('Voice recognition started');
+                    isRecording = true;
+                    voiceCommandBtn.classList.add('recording');
+                };
+
+                recognition.onend = () => {
+                    console.log('Voice recognition ended');
+                    isRecording = false;
+                    voiceCommandBtn.classList.remove('recording');
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Voice recognition error', event.error);
+                    isRecording = false;
+                    voiceCommandBtn.classList.remove('recording');
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript.toLowerCase();
+                    console.log('Voice command:', transcript);
+                    processVoiceCommand(transcript);
+                };
+
+                voiceCommandBtn.addEventListener('click', () => {
+                    if (isRecording) {
+                        recognition.stop();
+                    } else {
+                        recognition.start();
+                    }
+                });
+            } else {
+                voiceCommandBtn.style.display = 'none';
+                console.error('Web Speech API not supported in this browser');
+            }
+
+            function processVoiceCommand(command) {
+                // Show voice command in chat
                 const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML += `<div class="message user-message">Voice command: ${escapeHTML(command)}</div>`;
 
-                // Add user message
-                chatMessages.innerHTML += `<div class="message user-message">${escapeHTML(message)}</div>`;
-                userInput.value = '';
+                // Process different commands
+                if (command.includes('model') || command.includes('status')) {
+                    // Switch to dashboard tab
+                    document.getElementById('dashboard-tab').click();
+                    chatMessages.innerHTML += `<div class="message ai-message">Showing dashboard with model status</div>`;
+                } else if (command.includes('code review') || command.includes('analyze code')) {
+                    // Switch to code review tab
+                    document.getElementById('codereview-tab').click();
+                    chatMessages.innerHTML += `<div class="message ai-message">Opening code review tool</div>`;
+                } else if (command.includes('prompt') || command.includes('engineering')) {
+                    // Switch to prompt engineering tab
+                    document.getElementById('promptengine-tab').click();
+                    chatMessages.innerHTML += `<div class="message ai-message">Opening prompt engineering interface</div>`;
+                } else if (command.includes('optimize') || command.includes('performance')) {
+                    chatMessages.innerHTML += `<div class="message ai-message">Analyzing code for optimization opportunities...</div>`;
+                    setTimeout(() => {
+                        document.getElementById('codereview-tab').click();
+                        chatMessages.innerHTML += `<div class="message ai-message">Found 3 performance improvement opportunities. See Code Review tab.</div>`;
+                    }, 1500);
+                } else if (command.includes('help') || command.includes('command')) {
+                    chatMessages.innerHTML += `<div class="message ai-message">
+                    <strong>Available voice commands:</strong><br>
+                    - "Show model status" - View dashboard<br>
+                    - "Start code review" - Open code analysis<br>
+                    - "Open prompt engineering" - Design custom prompts<br>
+                    - "Optimize my code" - Find performance improvements<br>
+                    - "Help" - Show this message
+                </div>`;
+                } else {
+                    // Process as regular chat message
+                    setTimeout(() => {
+                        let response = getAIResponse(command);
+                        chatMessages.innerHTML += `<div class="message ai-message">${response}</div>`;
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 500);
+                }
 
-                // Simulate thinking
-                setTimeout(() => {
-                    // Add AI response based on the message
-                    let response = getAIResponse(message);
-                    chatMessages.innerHTML += `<div class="message ai-message">${response}</div>`;
-
-                    // Scroll to bottom
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 500);
-
-                // Scroll to bottom immediately after user message
+                // Scroll to bottom
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
-        }
 
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag]));
-        }
+            // Prompt Engineering Drag & Drop
+            document.querySelectorAll('.prompt-module').forEach(module => {
+                module.setAttribute('draggable', true);
 
-        function getAIResponse(message) {
-            message = message.toLowerCase();
+                module.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', module.innerHTML);
+                    module.classList.add('dragging');
+                });
 
-            // Simple pattern matching for demo purposes
-            if (message.includes('gpu') || message.includes('performance')) {
-                return "Your GPU performance is optimized. The CUDA acceleration is working properly with TensorRT enabled. Model inference is currently using about 25% of available GPU resources.";
-            } else if (message.includes('model') || message.includes('granite')) {
-                return "You're currently using the granite-code:8b model. This is optimized for code generation tasks. If you need better performance, consider installing the smaller granite-code:3b model, or for higher quality, the granite-code:13b model.";
-            } else if (message.includes('python') || message.includes('code')) {
-                return "I can help with Python coding. For example, I can analyze your code for quality issues, suggest improvements, or help you implement new features. Would you like me to check your current project?";
-            } else if (message.includes('hello') || message.includes('hi')) {
-                return "Hello! I'm your AI assistant for watsonx Code Assistant. I can help you manage your models, optimize performance, or assist with coding tasks.";
-            } else if (message.includes('train') || message.includes('learning')) {
-                return "The system is currently adapting to your codebase patterns. This helps improve code suggestions. You can configure additional training in the AI Model Training section.";
-            } else {
-                return "I'm here to help with your watsonx Code Assistant. I can provide information about models, performance optimization, or help with coding tasks. What would you like to know?";
-            }
-        }
+                module.addEventListener('dragend', () => {
+                    module.classList.remove('dragging');
+                });
+            });
 
-        // Enhanced GPU monitoring
-        function updateSystemMonitoring() {
-            // Update GPU chart with more realistic values
-            const newValue = Math.floor(Math.random() * 40) + 15; // More varied usage patterns
-            gpuChart.data.datasets[0].data.shift();
-            gpuChart.data.datasets[0].data.push(newValue);
-            gpuChart.update();
+            const promptDropZone = document.getElementById('promptDropZone');
+            promptDropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                promptDropZone.classList.add('border-primary');
+            });
 
-            const gpuProgressBar = document.querySelector('.card:nth-child(3) .progress-bar');
-            gpuProgressBar.style.width = `${newValue}%`;
-            gpuProgressBar.textContent = `${newValue}%`;
+            promptDropZone.addEventListener('dragleave', () => {
+                promptDropZone.classList.remove('border-primary');
+            });
 
-            // Update CPU and RAM usage with slight variations
-            const cpuUsage = Math.floor(Math.random() * 10) + 10;
-            const ramUsage = Math.floor(Math.random() * 0.5 * 100) / 100 + 2.3;
+            promptDropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                promptDropZone.classList.remove('border-primary');
 
-            document.querySelector('.col-md-6:nth-child(2) .progress-bar:nth-child(1)').style.width = `${cpuUsage}%`;
-            document.querySelector('.col-md-6:nth-child(2) .form-label:nth-child(1) span:nth-child(2)').textContent = `${cpuUsage}%`;
+                const moduleHTML = e.dataTransfer.getData('text/plain');
+                if (moduleHTML) {
+                    // Remove placeholder if it's there
+                    if (promptDropZone.querySelector('.text-center.text-muted')) {
+                        promptDropZone.innerHTML = '';
+                    }
 
-            document.querySelector('.col-md-6:nth-child(2) .progress-bar:nth-child(2)').style.width = `${ramUsage/16*100}%`;
-            document.querySelector('.col-md-6:nth-child(2) .form-label:nth-child(2) span:nth-child(2)').textContent = `${ramUsage.toFixed(1)}GB / 16GB`;
+                    // Create a new div for this module
+                    const moduleElement = document.createElement('div');
+                    moduleElement.className = 'prompt-module';
+                    moduleElement.innerHTML = moduleHTML;
 
-            // Update terminal with random events
-            if (Math.random() > 0.8) {
-                const terminal = document.querySelector('.terminal');
-                const messages = [
-                    '> Processing request: code completion',
-                    '> Analyzing workspace code patterns',
-                    '> GPU tensor optimization active',
-                    '> Auto-scaled batch size to 16',
-                    '✓ Completed request in ' + Math.floor(Math.random() * 100 + 150) + 'ms',
-                    '> Memory usage optimized'
-                ];
-                const newMessage = document.createElement('div');
-                newMessage.textContent = messages[Math.floor(Math.random() * messages.length)];
-                terminal.appendChild(newMessage);
-                terminal.scrollTop = terminal.scrollHeight;
-            }
+                    // Add remove button
+                    const removeBtn = document.createElement('button');
+                    removeBtn.className = 'btn btn-sm btn-outline-danger float-end';
+                    removeBtn.innerHTML = '<i class="bi bi-x"></i>';
+                    removeBtn.onclick = function () {
+                        moduleElement.remove();
+                        if (promptDropZone.children.length === 0) {
+                            promptDropZone.innerHTML = `
+                            <div class="text-center text-muted p-5">
+                                <i class="bi bi-arrows-move fs-1"></i>
+                                <p>Drag modules here to build your prompt</p>
+                            </div>
+                        `;
+                        }
+                    };
+                    moduleElement.prepend(removeBtn);
 
-            // Update training progress
-            const trainingBars = document.querySelectorAll('.training-progress .progress-bar');
-            trainingBars.forEach(bar => {
-                let currentWidth = parseInt(bar.style.width);
-                if (currentWidth < 100) {
-                    currentWidth += Math.random() > 0.5 ? 1 : 0;
-                    bar.style.width = `${currentWidth}%`;
-                } else {
-                    // Reset to simulate a new training cycle
-                    bar.style.width = '5%';
+                    promptDropZone.appendChild(moduleElement);
                 }
             });
-        }
 
-        // Run the system monitoring updates more frequently
-        setInterval(updateSystemMonitoring, 2000);
-    </script>
+            // Creativity slider
+            const creativitySlider = document.getElementById('creativitySlider');
+            const creativityValue = document.getElementById('creativityValue');
+
+            creativitySlider.addEventListener('input', () => {
+                const value = creativitySlider.value;
+                let label;
+
+                if (value <= 2) label = "Very Precise";
+                else if (value <= 4) label = "Precise";
+                else if (value <= 6) label = "Balanced";
+                else if (value <= 8) label = "Creative";
+                else label = "Very Creative";
+
+                creativityValue.textContent = label;
+            });
+
+            // Code Review button
+            document.getElementById('startCodeReviewBtn').addEventListener('click', function () {
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Analyzing...';
+                this.disabled = true;
+
+                // Simulate analysis delay
+                setTimeout(() => {
+                    this.innerHTML = '<i class="bi bi-search"></i> Start New Review';
+                    this.disabled = false;
+
+                    // Show review results (they're already in the HTML for demo purposes)
+                    document.getElementById('reviewResults').style.display = 'block';
+                }, 3000);
+            });
+        </script>
 </body>
 
 </html>

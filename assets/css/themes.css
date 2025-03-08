@@ -1,0 +1,54 @@
+/* Light/Dark Theme Support */
+body.dark-mode {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+}
+
+.theme-switch {
+    width: 60px;
+    height: 30px;
+    background-color: var(--secondary-color);
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+}
+
+.theme-switch-toggle {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-color: white;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+}
+
+.dark-mode .theme-switch-toggle {
+    transform: translateX(30px);
+}
+
+/* Dark mode component styles */
+.dark-mode .chat-messages {
+    background-color: var(--dark-bg);
+}
+
+.dark-mode .ai-message {
+    background-color: #4d4d4d;
+    color: var(--text-light);
+}
+
+.dark-mode .chat-input {
+    background-color: var(--dark-bg);
+    border-top: 1px solid #4d4d4d;
+}
+
+.dark-mode .chat-input input {
+    background-color: #333;
+    border-color: #666;
+    color: white;
+}
+
+.dark-mode .suggestion-badge {
+    background-color: rgba(70, 130, 255, 0.2);
+}
