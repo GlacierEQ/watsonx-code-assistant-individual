@@ -216,32 +216,3 @@ echo "./launch-watsonx.sh"
 echo ""
 echo "Starting the interface now..."
 ./launch-watsonx.sh
-
-# Automated Installation Script for IBM Watsonx Code Assistant
-# Detects platform, hardware, and automatically configures optimal installation
-
-# Continue from the existing script, adding the remaining code...
-            cd "$INSTALL_DIR"
-            echo -e "\n${YELLOW}Starting Watsonx Code Assistant...${NC}"
-            ./docker-setup.sh
-        fi
-    fi
-
-    echo -e "\n${BLUE}For detailed usage instructions, see: ${BOLD}$README${NC}"
-    
-    # Optional: show quick start tips
-    echo -e "\n${GREEN}${BOLD}Quick Start Tips:${NC}"
-    echo -e "• The Watsonx UI is available at: ${BOLD}http://localhost:5000${NC}"
-    echo -e "• Default Ollama API endpoint: ${BOLD}http://localhost:11434${NC}"
-    echo -e "• For help, visit: ${BOLD}https://github.com/IBM/watsonx-code-assistant-individual${NC}"
-    
-    if [ "$INSTALL_METHOD" == "docker" ]; then
-        echo -e "• To stop the containers: ${BOLD}docker-compose down${NC}"
-        echo -e "• To view logs: ${BOLD}docker-compose logs -f${NC}"
-    else
-        echo -e "• To stop the service: ${BOLD}Ctrl+C${NC} in the terminal window"
-    fi
-}
-
-# Run the main installation process
-main

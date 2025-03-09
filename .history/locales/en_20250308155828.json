@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "Watsonx Code Assistant Dashboard",
+    "description": "A professional AI code management interface"
+  },
+  "auth": {
+    "signin": "Sign In",
+    "username": "Username",
+    "password": "Password",
+    "remember": "Remember me",
+    "guest": "Continue as Guest",
+    "logout": "Log out",
+    "profile": "Profile",
+    "settings": "Settings",
+    "errors": {
+      "required": "Please enter both username and password",
+      "failed": "Authentication failed",
+      "generic": "An error occurred during login"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "models": "Models",
+    "config": "Configuration",
+    "system": "System",
+    "logs": "Logs",
+    "help": "Help",
+    "theme": "Theme"
+  },
+  "dashboard": {
+    "status": {
+      "ollama": "Ollama Status",
+      "running": "Running",
+      "stopped": "Stopped",
+      "port": "Port:",
+      "activeModel": "Active Model",
+      "modelSize": "loaded",
+      "gpuUtilization": "GPU Utilization",
+      "vram": "VRAM",
+      "extension": "Extension Status",
+      "installed": "Installed",
+      "version": "v"
+    },
+    "buttons": {
+      "settings": "Settings",
+      "launchVSCode": "Launch VS Code"
+    }
+  },
+  "models": {
+    "available": "Available Models",
+    "add": "Add Model",
+    "install": "Install Model",
+    "cancel": "Cancel"
+  },
+  "tabs": {
+    "dashboard": "Dashboard",
+    "codeReview": "AI Code Review",
+    "promptEngine": "Prompt Engineer",
+    "advanced": "Advanced"
+  },
+  "codeReview": {
+    "title": "Code Review",
+    "startReview": "Start New Review",
+    "analyzing": "Analyzing...",
+    "issues": {
+      "warning": "Warning",
+      "error": "Error",
+      "improvement": "Improvement",
+      "security": "Security"
+    },
+    "actions": {
+      "showFix": "Show Fix",
+      "showOriginal": "Show Original",
+      "ignore": "Ignore",
+      "ignored": "Ignored"
+    }
+  },
+  "collaboration": {
+    "online": "online",
+    "joinRoom": "Join Room",
+    "leaveRoom": "Leave Room",
+    "roomId": "Room ID"
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "connectionLost": "Connection to server lost",
+    "modelLoad": "Failed to load model",
+    "codeReviewFailed": "Failed to complete code review",
+    "reconnecting": "Attempting to reconnect..."
+  },
+  "notifications": {
+    "welcome": "Welcome",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
+  }
+}

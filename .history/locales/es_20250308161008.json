@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "Panel de Control de Watsonx Code Assistant",
+    "description": "Una interfaz profesional de gestión de código con IA"
+  },
+  "auth": {
+    "signin": "Iniciar Sesión",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "remember": "Recordarme",
+    "guest": "Continuar como Invitado",
+    "logout": "Cerrar sesión",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "errors": {
+      "required": "Por favor introduce nombre de usuario y contraseña",
+      "failed": "Autenticación fallida",
+      "generic": "Ocurrió un error durante el inicio de sesión"
+    }
+  },
+  "nav": {
+    "dashboard": "Panel Principal",
+    "models": "Modelos",
+    "config": "Configuración",
+    "system": "Sistema",
+    "logs": "Registros",
+    "help": "Ayuda",
+    "theme": "Tema"
+  },
+  "dashboard": {
+    "status": {
+      "ollama": "Estado de Ollama",
+      "running": "Funcionando",
+      "stopped": "Detenido",
+      "port": "Puerto:",
+      "activeModel": "Modelo Activo",
+      "modelSize": "cargado",
+      "gpuUtilization": "Utilización de GPU",
+      "vram": "VRAM",
+      "extension": "Estado de la Extensión",
+      "installed": "Instalada",
+      "version": "v"
+    },
+    "buttons": {
+      "settings": "Configuración",
+      "launchVSCode": "Iniciar VS Code"
+    }
+  },
+  "models": {
+    "available": "Modelos Disponibles",
+    "add": "Añadir Modelo",
+    "install": "Instalar Modelo",
+    "cancel": "Cancelar"
+  },
+  "tabs": {
+    "dashboard": "Panel Principal",
+    "codeReview": "Revisión de Código con IA",
+    "promptEngine": "Ingeniero de Prompts",
+    "advanced": "Avanzado"
+  },
+  "codeReview": {
+    "title": "Revisión de Código",
+    "startReview": "Iniciar Nueva Revisión",
+    "analyzing": "Analizando...",
+    "issues": {
+      "warning": "Advertencia",
+      "error": "Error",
+      "improvement": "Mejora",
+      "security": "Seguridad"
+    },
+    "actions": {
+      "showFix": "Mostrar Solución",
+      "showOriginal": "Mostrar Original",
+      "ignore": "Ignorar",
+      "ignored": "Ignorado"
+    }
+  },
+  "collaboration": {
+    "online": "en línea",
+    "joinRoom": "Unirse a Sala",
+    "leaveRoom": "Abandonar Sala",
+    "roomId": "ID de Sala"
+  },
+  "errors": {
+    "generic": "Ocurrió un error",
+    "connectionLost": "Conexión al servidor perdida",
+    "modelLoad": "Error al cargar el modelo",
+    "codeReviewFailed": "Error al completar la revisión de código",
+    "reconnecting": "Intentando reconectar..."
+  },
+  "notifications": {
+    "welcome": "Bienvenido",
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Advertencia",
+    "info": "Información"
+  }
+}
