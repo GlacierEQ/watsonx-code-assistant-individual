@@ -1,0 +1,67 @@
+{
+  "team_name": "watsonx-ninja-team",
+  "team_version": "1.0.0",
+  "build_engine": {
+    "max_parallel_jobs": "auto",
+    "incremental": true,
+    "stats_enabled": true,
+    "deps_cache": true,
+    "deps_pruning": true,
+    "optimize_critical_path": true,
+    "target_grouping": true,
+    "cmake_integration": true
+  },
+  "cache": {
+    "enabled": true,
+    "dir": ".ninja_cache",
+    "distributed": true,
+    "compression": "zstd",
+    "compression_level": 3,
+    "max_size_gb": 20,
+    "ttl_days": 14,
+    "prune_strategy": "lru",
+    "artifact_validation": true
+  },
+  "remote_execution": {
+    "enabled": true,
+    "protocol": "ssh",
+    "timeout": 5,
+    "retry_attempts": 3,
+    "credential_provider": "ssh_agent",
+    "health_check_interval": 30
+  },
+  "distribution": {
+    "scheduling_algorithm": "load_aware",
+    "load_balancing": true,
+    "task_stealing": true,
+    "worker_affinity": true,
+    "capacity_planning": true,
+    "bandwidth_optimization": true
+  },
+  "recursive": {
+    "enabled": true,
+    "max_depth": 3,
+    "strategy": "exponential",
+    "fan_out_limit": 16,
+    "node_failure_handling": "resilient"
+  },
+  "advanced": {
+    "progress_reporting": true,
+    "telemetry": true,
+    "memory_limit": "90%",
+    "diagnostics": "verbose",
+    "tracing": false
+  },
+  "cmake": {
+    "enabled": true,
+    "generator": "Ninja",
+    "parallel_configuration": true,
+    "preset": "default",
+    "build_dir": "build",
+    "unified_build": true,
+    "auto_reconfigure": true,
+    "configure_on_demand": true,
+    "export_compile_commands": true,
+    "parse_diagnostics": true
+  }
+}

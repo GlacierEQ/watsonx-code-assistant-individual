@@ -1,0 +1,14 @@
+# Ninja Build Team - Host Configuration
+# Format: hostname port [capabilities]
+# Example: server1.example.com 8374 gpu,high-mem
+
+# Local host (always available)
+localhost 8374
+
+# Add remote build hosts below
+# hostname1 8374
+# hostname2 8374
+
+# For machines with special capabilities, add them after the port
+# gpu-server1 8374 gpu,cuda=11.4
+# build-server5 8374 high-mem,fast-storage

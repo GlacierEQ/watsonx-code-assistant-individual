@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: watsonx-code-assistant
+  labels:
+    app: watsonx-code-assistant
+    release: monitoring  # Match the Prometheus Operator release name
+spec:
+  selector:
+    matchLabels:
+      app: watsonx-code-assistant
+  namespaceSelector:
+    matchNames:
+      - {{NAMESPACE}}  # Will be replaced during deployment
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s
+    scrapeTimeout: 10s
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      regex: watsonx_.*
+      action: keep
+  - port: http
+    path: /api/metrics
+    interval: 30s
+    scrapeTimeout: 10s
+    targetPort: http
+    honorLabels: true
