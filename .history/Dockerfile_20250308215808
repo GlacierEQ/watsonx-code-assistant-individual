@@ -5,11 +5,6 @@ FROM python:3.9-slim-buster AS builder
 
 WORKDIR /app
 
-# Create a Python virtual environment
-RUN python -m venv /opt/venv
-# Activate the virtual environment
-ENV PATH="/opt/venv/bin:$PATH"
-
 # Copy the requirements file into the container at /app
 COPY requirements.txt .
 
@@ -46,8 +41,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     wget \
     ca-certificates \
-    nginx \
-    sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -71,9 +64,6 @@ RUN groupadd -g 10001 watsonx && \
     mkdir -p /data/models && \
     chown -R watsonx:watsonx /data
 
-# Add sudo permissions for watsonx user to start ollama
-RUN echo "watsonx ALL=(ALL) NOPASSWD: /usr/bin/ollama" >> /etc/sudoers
-
 # Create health check script
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh
 RUN chmod +x /usr/local/bin/healthcheck.sh
@@ -91,28 +81,8 @@ ENV PYTHONUNBUFFERED=1 \
     OLLAMA_PORT=11434 \
     MODEL_CACHE_DIR=/data/models
 
-# Create nginx directory and config file directly
-RUN mkdir -p /etc/nginx && echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    location / { \
-        proxy_pass http://localhost:5000; \
-        proxy_set_header Host $host; \
-        proxy_set_header X-Real-IP $remote_addr; \
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
-        proxy_set_header X-Forwarded-Proto $scheme; \
-    } \
-    location /api { \
-        proxy_pass http://localhost:11434; \
-        proxy_set_header Host $host; \
-        proxy_set_header X-Real-IP $remote_addr; \
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
-        proxy_set_header X-Forwarded-Proto $scheme; \
-    } \
-}' > /etc/nginx/nginx.conf
-
 # Expose ports
-EXPOSE 80 443 5000 11434
+EXPOSE 5000 11434
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
@@ -124,5 +94,5 @@ USER watsonx
 # Define volumes for persistence
 VOLUME ["/data/models", "/app/data"]
 
-# Start the application and nginx using a single command
-CMD /usr/local/bin/docker-entrypoint.sh
+# Set the entry point
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

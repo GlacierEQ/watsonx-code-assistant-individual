@@ -8,8 +8,6 @@ services:
     image: watsonx-code-assistant
     container_name: watsonx-code-assistant
     ports:
-      - "80:80"
-      - "443:443"
       - "5000:5000"
       - "11434:11434"
     volumes:
@@ -22,6 +20,19 @@ services:
       - OLLAMA_HOST=localhost
       - OLLAMA_PORT=11434
       - MODEL_CACHE_DIR=/data/models
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - watsonx
     restart: unless-stopped
 
 volumes:

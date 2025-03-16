@@ -90,3 +90,11 @@ nginx -g 'daemon off;' &
 # Start the Watsonx application
 echo "Starting Watsonx application..."
 python app.py
+
+# Start the UI server
+echo "[$(date -Iseconds)] Starting Watsonx Code Assistant UI..."
+python start_ui_server.py --host 0.0.0.0 --port $PORT &
+FLASK_PID=$!
+
+# Wait for all processes to finish
+wait $FLASK_PID

@@ -1,0 +1,48 @@
+2025-03-08 19:27:03 [INFO] Validating configuration...
+2025-03-08 19:27:03 [WARN] Config file scriptsninja-team-config.json not found, generating default configuration
+2025-03-08 19:27:03 [INFO] Generating default team configuration
+2025-03-08 19:27:03 [INFO] Default configuration generated at scriptsninja-team-config.json
+2025-03-08 19:27:03 [INFO] Build mode: recursive
+2025-03-08 19:27:03 [INFO] Configuration validated successfully
+2025-03-08 19:27:03 [INFO] Parsing hosts file: ninja-hosts.txt
+2025-03-08 19:27:03 [INFO] Found 4 build agents in hosts file
+2025-03-08 19:27:03 [INFO] Checking connections to build agents...
+2025-03-08 19:27:03 [WARN] ❌ Cannot connect to host : - skipping
+2025-03-08 19:27:03 [WARN] ❌ Cannot connect to host : - skipping
+2025-03-08 19:27:03 [WARN] ❌ Cannot connect to host : - skipping
+2025-03-08 19:27:03 [WARN] ❌ Cannot connect to host : - skipping
+2025-03-08 19:27:03 [INFO] Connection check complete: 0/4 hosts are valid
+2025-03-08 19:27:03 [WARN] Not enough valid remote hosts for recursive mode
+2025-03-08 19:27:03 [WARN] Falling back to single mode
+2025-03-08 19:27:03 [INFO] Launching Ninja build team controller...
+2025-03-08 19:27:03 [INFO] Generated hosts file with 0 entries
+2025-03-08 19:27:03 [INFO] Starting ninja-team controller in single mode with recursive depth 3
+2025-03-08 19:27:03 [INFO] Executing: python3 ./scripts/ninja-team.py         --mode single         --config scriptsninja-team-config.json         --hosts ./logs/ninja-team/ninja-hosts-generated.txt         --recursive-depth 3         --verbose
+2025-03-08 19:27:03 [INFO] Starting controller in single mode
+2025-03-08 19:27:04 [ERROR] ❌ Ninja build team controller failed with exit code 1
+2025-03-08 19:27:04 [INFO] Cleaning up...
+2025-03-08 19:27:04 [INFO] Cleanup complete
+2025-03-08 19:27:04 [ERROR] ❌ Ninja build team deployment failed
+2025-03-08 19:31:36 [INFO] Validating configuration...
+2025-03-08 19:31:36 [INFO] Using team configuration: /mnt/c/Users/casey/OneDrive/Documents/GitHub/watsonx-code-assistant-individual/scripts/ninja-team-config.json
+2025-03-08 19:31:36 [INFO] Build mode: recursive
+2025-03-08 19:31:36 [INFO] Configuration validated successfully
+2025-03-08 19:31:36 [INFO] Parsing hosts file: /mnt/c/Users/casey/OneDrive/Documents/GitHub/watsonx-code-assistant-individual/ninja-hosts.txt
+2025-03-08 19:31:36 [INFO] Found 4 build agents in hosts file
+2025-03-08 19:31:36 [INFO] Checking connections to build agents...
+2025-03-08 19:31:36 [WARN] ❌ Cannot connect to host : - skipping
+2025-03-08 19:31:36 [WARN] ❌ Cannot connect to host : - skipping
+2025-03-08 19:31:36 [WARN] ❌ Cannot connect to host : - skipping
+2025-03-08 19:31:36 [WARN] ❌ Cannot connect to host : - skipping
+2025-03-08 19:31:36 [INFO] Connection check complete: 0/4 hosts are valid
+2025-03-08 19:31:36 [WARN] Not enough valid remote hosts for recursive mode
+2025-03-08 19:31:36 [WARN] Falling back to single mode
+2025-03-08 19:31:36 [INFO] Launching Ninja build team controller...
+2025-03-08 19:31:36 [INFO] Generated hosts file with 0 entries
+2025-03-08 19:31:36 [INFO] Starting ninja-team controller in single mode with recursive depth 3
+2025-03-08 19:31:36 [INFO] Executing: python3 ./scripts/ninja-team.py         --mode single         --config /mnt/c/Users/casey/OneDrive/Documents/GitHub/watsonx-code-assistant-individual/scripts/ninja-team-config.json         --hosts ./logs/ninja-team/ninja-hosts-generated.txt         --recursive-depth 3         --verbose
+2025-03-08 19:31:36 [INFO] Starting controller in single mode
+2025-03-08 19:31:36 [ERROR] ❌ Ninja build team controller failed with exit code 1
+2025-03-08 19:31:36 [INFO] Cleaning up...
+2025-03-08 19:31:36 [INFO] Cleanup complete
+2025-03-08 19:31:36 [ERROR] ❌ Ninja build team deployment failed

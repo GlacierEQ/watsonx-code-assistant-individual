@@ -1,0 +1,6 @@
+{
+  "deployment_type": "standard",
+  "timeout": 600,
+  "pre_deployment_script": "./scripts/pre-deploy.sh",
+  "post_deployment_script": "./scripts/post-deploy.sh"
+}

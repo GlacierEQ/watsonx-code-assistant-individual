@@ -15,11 +15,6 @@ COPY requirements.txt .
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the application code into the container
-COPY . .
-
-# Make port 80 available to the world outside this container
 EXPOSE 80
 
 # Run app.py when the container launches
@@ -47,7 +42,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
     nginx \
-    sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -70,9 +64,6 @@ RUN groupadd -g 10001 watsonx && \
     useradd -u 10000 -g watsonx -s /sbin/nologin -c "Watsonx Application User" watsonx && \
     mkdir -p /data/models && \
     chown -R watsonx:watsonx /data
-
-# Add sudo permissions for watsonx user to start ollama
-RUN echo "watsonx ALL=(ALL) NOPASSWD: /usr/bin/ollama" >> /etc/sudoers
 
 # Create health check script
 COPY healthcheck.sh /usr/local/bin/healthcheck.sh

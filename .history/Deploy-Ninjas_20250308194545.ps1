@@ -234,48 +234,29 @@ if ($Full) {
     if ($wslEnabled) {
         WriteColor "[INFO] Using WSL to run full deployment script..." "Yellow"
         
-        # Make sure we initialize the build environment properly
-        if (-not (Test-Path $buildNinjaPath) -or $Initialize) {
-            & "$PSScriptRoot\scripts\init-build-env.ps1"
-        }
-        
-        # Ensure scripts directory exists in WSL
-        wsl mkdir -p scripts 2>&1 | Out-Null
-        
         # Convert Windows path to WSL path with correct separators
         $currentDir = (Get-Location).Path.Replace("\", "/").Replace("C:", "/mnt/c")
-        $wslConfig = "$currentDir/scripts/ninja-team-config.json"
-        $wslHosts = "$currentDir/ninja-hosts.txt"
+        $wslConfig = "$currentDir/scripts/ninja-team-config.json" # Fix path separator
+        $wslHosts = "$currentDir/ninja-hosts.txt" # Fix path separator
         
         # Make sure Ninja is installed in WSL
         WriteColor "[INFO] Ensuring Ninja is installed in WSL environment..." "Yellow"
         wsl bash -c "command -v ninja || (sudo apt-get update && sudo apt-get install -y ninja-build)"
         
-        # Initialize build environment directly in WSL - with proper line endings
-        WriteColor "[INFO] Creating WSL-compatible build environment..." "Yellow"
+        # Initialize build environment directly in WSL - this ensures Unix line endings
+        WriteColor "[INFO] Initializing build environment in WSL..." "Yellow"
+        wsl bash -c "chmod +x $currentDir/scripts/init-wsl-build.sh && $currentDir/scripts/init-wsl-build.sh build"
         
-        # Check if our WSL init script exists, if not, create it
-        if (-not (wsl test -f $currentDir/scripts/init-wsl-build.sh 2>/dev/null)) {
-            WriteColor "[INFO] Creating WSL build initialization script..." "Yellow"
-            Copy-Item -Path "scripts\init-wsl-build.sh" -Destination "scripts\init-wsl-build.sh" -Force
+        # Verify the build.ninja file is accessible and valid in WSL
+        $ninjaCheckResult = wsl bash -c "cd $currentDir && cd build && ninja -t targets all >/dev/null 2>&1 && echo 'SUCCESS' || echo 'FAIL'"
+        if ($ninjaCheckResult -ne "SUCCESS") {
+            WriteColor "[WARNING] Invalid build.ninja file detected in WSL, attempting to fix..." "Yellow"
+            wsl bash -c "cd $currentDir && cd build && sed -i 's/\r//g' build.ninja"
         }
         
-        # Make script executable and run it
-        wsl chmod +x $currentDir/scripts/init-wsl-build.sh
-        wsl $currentDir/scripts/init-wsl-build.sh $currentDir/build
-        
-        # Create the wrapper script if needed
-        if (-not (wsl test -f $currentDir/scripts/ninja-wsl-wrapper.sh 2>/dev/null)) {
-            WriteColor "[INFO] Creating Ninja WSL wrapper script..." "Yellow"
-            Copy-Item -Path "scripts\ninja-wsl-wrapper.sh" -Destination "scripts\ninja-wsl-wrapper.sh" -Force
-        }
-        
-        # Make wrapper script executable
-        wsl chmod +x $currentDir/scripts/ninja-wsl-wrapper.sh
-        
-        # Execute the bash script through WSL with proper fix for build.ninja
+        # Execute the bash script through WSL
         WriteColor "[INFO] Running deployment script in WSL..." "Yellow"
-        wsl cd $currentDir "&&" chmod +x ./scripts/deploy-ninja-team.sh "&&" ./scripts/deploy-ninja-team.sh --config="$wslConfig" --hosts="$wslHosts" --depth=$Depth --mode=$Mode
+        wsl cd $currentDir "&&" chmod +x ./scripts/deploy-ninja-team.sh "&&" ./scripts/deploy-ninja-team.sh --config="$wslConfig" --hosts="$wslHosts" --depth=$Depth --mode=$Mode --build-dir="$currentDir/build"
         
         if ($LASTEXITCODE -eq 0) {
             WriteColor "`n===============================================" "Green"

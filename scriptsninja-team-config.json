@@ -1,0 +1,29 @@
+{
+    "team_name": "watsonx-ninja-team",
+    "team_version": "1.0.0",
+    "max_parallel_jobs": 22,
+    "cache_enabled": true,
+    "cache_dir": "/tmp/ninja-cache",
+    "recursive_depth": 3,
+    "heartbeat_interval": 5,
+    "optimization_strategy": "balanced",
+    "cc_launcher": "ccache",
+    "remote_execution": {
+        "enabled": true,
+        "protocol": "ssh",
+        "timeout": 5,
+        "retry_attempts": 3
+    },
+    "advanced_features": {
+        "distributed_cache": true,
+        "predictive_scheduling": true,
+        "auto_recovery": true,
+        "load_balancing": true,
+        "artifact_compression": true
+    },
+    "logging": {
+        "level": "INFO",
+        "file": "./logs/ninja-team/ninja-team.log",
+        "metrics_enabled": true
+    }
+}
